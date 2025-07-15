@@ -1,0 +1,118 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-3">
+  <h3 class="title">{{ _('Welcome,') }} {{ current_user.name }} !</h3>
+  <br />
+</div>
+<div class="container border">
+  <br />
+  <form action="/profile" method="POST">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-3">
+          <label for="name">{{ _('Name:') }}</label>
+        </div>
+        <div class="col-9">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            value="{{ current_user.name }}"
+            required
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label for="email">{{ _('E-mail:') }}</label>
+        </div>
+        <div class="col-9">
+          <input
+            type="text"
+            class="form-control"
+            id="email"
+            name="email"
+            value="{{ current_user.email }}"
+            required
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label for="mobile">{{ _('Mobile:') }}</label>
+        </div>
+        <div class="col-9">
+          <input
+            type="text"
+            class="form-control"
+            id="mobile"
+            name="mobile"
+            value="{{ current_user.mobile }}"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label for="password">{{ _('Password:') }}</label>
+        </div>
+        <div class="col-9">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label for="repass">{{ _('Re-type Password:') }}</label>
+        </div>
+        <div class="col-9">
+          <input
+            type="password"
+            class="form-control"
+            id="repass"
+            name="repass"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label for="lang_selection">{{ _('Language:') }}</label>
+        </div>
+        <div class="col-3">
+          <select name="lang_selection" id="lang_selection" required>
+            {% if current_user.language == 'en' %}
+            <option value="en" selected>English</option>
+            <option value="pt">Português</option>
+            {% else %}
+            <option value="en">English</option>
+            <option value="pt" selected>Português</option>
+            {% endif %}
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label for="theme_selection">{{ _('Theme:') }}</label>
+        </div>
+        <div class="col-3">
+          <select name="theme_selection" id="theme_selection" required>
+            {% if current_user.theme == 'dark' %}
+            <option value="dark" selected>{{ _('Dark') }}</option>
+            <option value="light">{{ _('Light') }}</option>
+            {% else %}
+            <option value="dark">{{ _('Dark') }}</option>
+            <option value="light" selected>{{ _('Light') }}</option>
+            {% endif %}
+          </select>
+        </div>
+      </div>
+    </div>
+    <br />
+    <button class="btn btn-outline-primary">{{ _('Update') }}</button>
+  </form>
+  <br />
+</div>
+{% endblock %}
