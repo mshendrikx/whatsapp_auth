@@ -66,13 +66,13 @@ def create_app():
         if not user:
             new_user = User(
                 id=1,
-                admin=1,
+                mobile="+55999999999999",
                 name="Admin",
                 email="admin@admin.com",
                 password=generate_password_hash("admin", method="pbkdf2:sha256"),
-                mobile="",
                 language="en",
-                theme ="dark"
+                theme ="dark",
+                admin=1
             )
             db.session.add(new_user)
             db.session.commit()

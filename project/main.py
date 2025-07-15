@@ -1,8 +1,6 @@
 from flask_login import login_required, current_user
-from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_babel import gettext as _
-
 from flask import (
     Blueprint,
     render_template,
@@ -13,6 +11,8 @@ from flask import (
     jsonify,
     session,
 )
+
+from . import db
 
 main = Blueprint('main', __name__)
 

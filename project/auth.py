@@ -21,11 +21,11 @@ def login():
 @auth.route('/login', methods=['POST'])
 def login_post():
     # login code goes here
-    email = request.form.get('email')
+    mobile = request.form.get('mobile')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(mobile=mobile).first()
 
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
