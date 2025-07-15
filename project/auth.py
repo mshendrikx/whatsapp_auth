@@ -21,7 +21,7 @@ def login():
 @auth.route('/login', methods=['POST'])
 def login_post():
     # login code goes here
-    mobile = request.form.get('mobile')
+    mobile = request.form.get("mobile")
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
