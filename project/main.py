@@ -1,3 +1,5 @@
+import uuid
+
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_babel import gettext as _
@@ -60,6 +62,13 @@ def profile_post():
 
     db.session.add(current_user)
     db.session.commit()
+    
+    mobile_data = []
+    if mobile != current_user.mobile:
+        mobile_data.append(current_user.id)
+        unique_code = uuid.uuid4().hex
+        session["mobile"] = mobile
+        flash(_("Mobile number updated successfully"))
 
     return redirect(url_for("main.profile"))
 
