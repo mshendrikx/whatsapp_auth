@@ -67,7 +67,8 @@
             type="tel"
             class="form-control phone-input"
             id="phone"
-            name="phone"            
+            name="phone"
+            value="{{ current_user.mobile or '' }}"
           />
           <input type="hidden" id="mobile" name="mobile" />
           <div id="phoneError" class="invalid-feedback"></div>
@@ -146,77 +147,82 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
 
 <script>
-  // Initialize intl-tel-input
-  const phoneInput = document.querySelector("#phone");
-  const phoneError = document.querySelector("#phoneError");
-  const fullPhone = document.querySelector("#mobile");
+      // Initialize intl-tel-input
+      const phoneInput = document.querySelector("#phone");
+      const phoneError = document.querySelector("#phoneError");
+      const fullPhone = document.querySelector("#mobile");
 
-  const iti = window.intlTelInput(phoneInput, {
-    utilsScript:
-      "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-    preferredCountries: ["br", "us"],
-    separateDialCode: true,
-    initialCountry: "auto",
-    geoIpLookup: function (callback) {
-      fetch("https://ipapi.co/json/")
-        .then((res) => res.json())
-        .then((data) => callback(data.country_code))
-        .catch(() => callback("us"));
-    },
-    customPlaceholder: function (
-      selectedCountryPlaceholder,
-      selectedCountryData
-    ) {
-      return selectedCountryPlaceholder;
-    },
-  });
+      const iti = window.intlTelInput(phoneInput, {
+        utilsScript:
+          "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+        preferredCountries: ["br", "us"],
+        separateDialCode: true,
+        initialCountry: "auto",
+        geoIpLookup: function (callback) {
+          fetch("https://ipapi.co/json/")
+            .then((res) => res.json())
+            .then((data) => callback(data.country_code))
+            .catch(() => callback("us"));
+        },
+        customPlaceholder: function (
+          selectedCountryPlaceholder,
+          selectedCountryData
+        ) {
+          return selectedCountryPlaceholder;
+        },
+      });
 
-  // Form validation
-  document.getElementById("phoneForm").addEventListener("submit", function (e) {
-    e.preventDefault();
+  // Set initial phone number if available
+  {% if current_user.mobile %}
+  iti.setNumber("{{ current_user.mobile }}");
+  {% endif %}
 
-    // Reset error state
-    phoneInput.classList.remove("is-invalid");
-    phoneError.textContent = "";
+      // Form validation
+      document.getElementById("phoneForm").addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    // Validate phone number
-    if (!phoneInput.value.trim()) {
-      phoneInput.classList.add("is-invalid");
-      phoneError.textContent = "Please enter a phone number";
-      return;
-    }
-
-    if (iti.isValidNumber()) {
-      // Get the full international number
-      const fullNumber = iti.getNumber();
-      fullPhone.value = fullNumber;
-
-      // Form is valid, you can submit it now
-      // alert("Form is valid!\nPhone number: " + fullNumber);
-      this.submit(); // Uncomment to actually submit the form
-    } else {
-      phoneInput.classList.add("is-invalid");
-      phoneError.textContent = "Please enter a valid phone number";
-    }
-  });
-
-  // Real-time validation as user types
-  phoneInput.addEventListener("input", function () {
-    if (this.value) {
-      if (iti.isValidNumber()) {
-        this.classList.remove("is-invalid");
+        // Reset error state
+        phoneInput.classList.remove("is-invalid");
         phoneError.textContent = "";
-      }
-    }
-  });
 
-  // Handle phone input blur
-  phoneInput.addEventListener("blur", function () {
-    if (this.value && !iti.isValidNumber()) {
-      this.classList.add("is-invalid");
-      phoneError.textContent = "Please enter a valid phone number";
-    }
-  });
+        // Validate phone number
+        if (!phoneInput.value.trim()) {
+          phoneInput.classList.add("is-invalid");
+          phoneError.textContent = "Please enter a phone number";
+          return;
+        }
+
+        if (iti.isValidNumber()) {
+          // Get the full international number
+          const fullNumber = iti.getNumber();
+          fullPhone.value = fullNumber;
+
+          // Form is valid, you can submit it now
+          // alert("Form is valid!\nPhone number: " + fullNumber);
+          this.submit(); // Uncomment to actually submit the form
+        } else {
+          phoneInput.classList.add("is-invalid");
+          phoneError.textContent = "Please enter a valid phone number";
+        }
+      });
+
+      // Real-time validation as user types
+      phoneInput.addEventListener("input", function () {
+        if (this.value) {
+          if (iti.isValidNumber()) {
+            this.classList.remove("is-invalid");
+            phoneError.textContent = "";
+          }
+        }
+      });
+
+      // Handle phone input blur
+      phoneInput.addEventListener("blur", function () {
+        if (this.value && !iti.isValidNumber()) {
+          this.classList.add("is-invalid");
+          phoneError.textContent = "Please enter a valid phone number";
+        }
+      });
 </script>
 
 {% endblock %}
