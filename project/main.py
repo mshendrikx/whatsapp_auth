@@ -93,6 +93,3 @@ def mobilechange_post():
         flash(_("Verification code does not match"))
         flash("alert-danger")
         return render_template("mobilechange.html", mobile_data=mobile_data)
-
-    
-    return render_template('profile.html', name=current_user.name)
