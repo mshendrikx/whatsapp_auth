@@ -16,15 +16,3 @@ class User(UserMixin, db.Model):
         default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp()
     )
-    
-class MobileVerification(db.Model):
-    id = db.Column(db.String(32), primary_key=True)
-    user_id = db.Column(db.Integer)
-    mobile = db.Column(db.String(30), unique=True)
-    verify = db.Column(db.String(6))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(
-        db.DateTime,
-        default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp()
-    )    

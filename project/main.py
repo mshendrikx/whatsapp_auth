@@ -1,4 +1,4 @@
-import uuid
+import random
 
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,7 +14,7 @@ from flask import (
     session,
 )
 
-from models import User, MobileVerification
+from models import User
 
 from . import db
 
@@ -67,10 +67,32 @@ def profile_post():
     
     mobile_data = []
     if mobile != current_user.mobile:
-        mobile_data.append(current_user.id)
-        unique_code = uuid.uuid4().hex
-        session["mobile"] = mobile
-        flash(_("Mobile number updated successfully"))
+        mobile_data.append(mobile)
+        mobile_data.append(str(random.randint(100000, 999999)))
+        return render_template("mobilechange.html", mobile_data=mobile_data)
 
     return redirect(url_for("main.profile"))
 
+@main.route('/mobilechange', methods=["POST"])
+@login_required
+def mobilechange_post():
+    
+    mobile = request.form.get("mobile")
+    code = request.form.get("code")
+    verify = request.form.get("verify")
+    
+    if code == verify:
+        current_user.mobile = mobile
+        db.session.add(current_user)
+        db.session.commit()
+        flash(_("Mobile number updated successfully"))
+        flash("alert-success")
+        return redirect(url_for("main.profile"))
+    else:
+        mobile_data = [mobile, code]
+        flash(_("Verification code does not match"))
+        flash("alert-danger")
+        return render_template("mobilechange.html", mobile_data=mobile_data)
+
+    
+    return render_template('profile.html', name=current_user.name)
