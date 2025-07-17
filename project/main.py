@@ -14,6 +14,8 @@ from flask import (
     session,
 )
 
+from models import User, MobileVerification
+
 from . import db
 
 main = Blueprint('main', __name__)
