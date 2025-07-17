@@ -1,4 +1,5 @@
 import random
+import os
 
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,21 +14,31 @@ from flask import (
     jsonify,
     session,
 )
-
-from models import User
-
+from .whatsapp_api import (
+    whatsapp_convert_phone,
+    whatsapp_send_message,
+    whatsapp_restart_session,
+)
+from .models import User, MobVer
 from . import db
 
-main = Blueprint('main', __name__)
+main = Blueprint("main", __name__)
 
-@main.route('/')
+WHATSAPP_BASE_URL = os.environ.get("WHATSAPP_BASE_URL")
+WHATSAPP_API_KEY = os.environ.get("WHATSAPP_API_KEY")
+WHATSAPP_SESSION = os.environ.get("WHATSAPP_SESSION")
+
+
+@main.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@main.route('/profile')
+
+@main.route("/profile")
 @login_required
 def profile():
-    return render_template('profile.html', name=current_user.name)
+    return render_template("profile.html", name=current_user.name)
+
 
 @main.route("/profile", methods=["POST"])
 @login_required
@@ -58,38 +69,70 @@ def profile_post():
         current_user.name = name
 
     current_user.email = email
-    current_user.mobile = mobile
     current_user.language = language
     current_user.theme = theme
 
     db.session.add(current_user)
     db.session.commit()
-    
-    mobile_data = []
+
     if mobile != current_user.mobile:
-        mobile_data.append(mobile)
-        mobile_data.append(str(random.randint(100000, 999999)))
-        return render_template("mobilechange.html", mobile_data=mobile_data)
+        mobver = MobVer(
+            userid=current_user.id,
+            mobile=mobile,
+            code=str(random.randint(100000, 999999)),
+        )
+        db.session.add(mobver)
+        db.session.commit()
+
+        whatsapp_restart_session(
+            base_url="http://localhost:8000",
+            api_key="your_api_key_here",
+            session=current_user.id,
+        )
+
+        contacts = [whatsapp_convert_phone(mobile)]
+        content = _("Your verification code is: {code}").format(code=mobver.code)
+        whatsapp_send_message(
+            base_url=WHATSAPP_BASE_URL,
+            api_key=WHATSAPP_API_KEY,
+            session=WHATSAPP_SESSION,
+            contacts=contacts,
+            content=content,
+        )
+
+        return redirect(url_for("main.mobilechange"))
 
     return redirect(url_for("main.profile"))
 
-@main.route('/mobilechange', methods=["POST"])
+
+@main.route("/mobilechange")
+@login_required
+def mobilechange():
+
+    return render_template("mobilechange.html")
+
+
+@main.route("/mobilechange", methods=["POST"])
 @login_required
 def mobilechange_post():
-    
-    mobile = request.form.get("mobile")
-    code = request.form.get("code")
+
+    mobver = MobVer.query.filter_by(userid=current_user.id).first()
+    if not mobver:
+        flash(_("No mobile verification request found"))
+        flash("alert-danger")
+        return redirect(url_for("main.profile"))
+
     verify = request.form.get("verify")
-    
-    if code == verify:
-        current_user.mobile = mobile
+
+    if mobver.code == verify:
+        current_user.mobile = mobver.mobile
         db.session.add(current_user)
+        db.session.delete(mobver)
         db.session.commit()
         flash(_("Mobile number updated successfully"))
         flash("alert-success")
         return redirect(url_for("main.profile"))
     else:
-        mobile_data = [mobile, code]
         flash(_("Verification code does not match"))
         flash("alert-danger")
-        return render_template("mobilechange.html", mobile_data=mobile_data)
+        return redirect(url_for("main.mobilechange"))

@@ -66,7 +66,7 @@ def create_app():
         if not user:
             new_user = User(
                 id=1,
-                mobile="+55-99999999999",
+                mobile="+5599999999999",
                 name="Admin",
                 email="admin@admin.com",
                 password=generate_password_hash("admin", method="pbkdf2:sha256"),

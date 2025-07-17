@@ -5,8 +5,6 @@
     <div class="mb-3">
       <label for="verify">{{ _('Update Mobile Verify Code:') }}</label>
       <input type="text" class="form-control" id="verify" name="verify" required />
-      <input type="hidden" id="code" name="code" value="{{ mobile_data[1] }}" />
-      <input type="hidden" id="mobile" name="mobile" value="{{ mobile_data[0] }}" />
     </div>
     <button class="btn btn-outline-primary" id="update">Update</button>
   </form>
