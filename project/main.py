@@ -85,9 +85,9 @@ def profile_post():
         db.session.commit()
 
         whatsapp_restart_session(
-            base_url="http://localhost:8000",
-            api_key="your_api_key_here",
-            session=current_user.id,
+            base_url=WHATSAPP_BASE_URL,
+            api_key=WHATSAPP_API_KEY,
+            session=WHATSAPP_SESSION,
         )
 
         contacts = [whatsapp_convert_phone(mobile)]
@@ -98,6 +98,7 @@ def profile_post():
             session=WHATSAPP_SESSION,
             contacts=contacts,
             content=content,
+            content_type="string",
         )
 
         return redirect(url_for("main.mobilechange"))
