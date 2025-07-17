@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from . import db
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mobile = db.Column(db.String(30), unique=True)
@@ -14,11 +15,16 @@ class User(UserMixin, db.Model):
     updated_at = db.Column(
         db.DateTime,
         default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp()
+        onupdate=db.func.current_timestamp(),
     )
-    
+
+
 class MobVer(db.Model):
     userid = db.Column(db.Integer, primary_key=True)
     mobile = db.Column(db.String(30))
     code = db.Column(db.String(6))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp(),
+    )

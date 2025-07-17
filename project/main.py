@@ -76,11 +76,15 @@ def profile_post():
     db.session.commit()
 
     if mobile != current_user.mobile:
-        mobver = MobVer(
-            userid=current_user.id,
-            mobile=mobile,
-            code=str(random.randint(100000, 999999)),
-        )
+        mobver = MobVer.query.filter_by(userid=current_user.id).first()
+        if mobver:
+            mobver.code = str(random.randint(100000, 999999))
+        else:
+            mobver = MobVer(
+                userid=current_user.id,
+                mobile=mobile,
+                code=str(random.randint(100000, 999999)),
+            )
         db.session.add(mobver)
         db.session.commit()
 
@@ -90,7 +94,7 @@ def profile_post():
             session=WHATSAPP_SESSION,
         )
 
-        contacts = [whatsapp_convert_phone(mobile)]
+        contacts = [mobile]
         content = _("Your verification code is: {code}").format(code=mobver.code)
         whatsapp_send_message(
             base_url=WHATSAPP_BASE_URL,
