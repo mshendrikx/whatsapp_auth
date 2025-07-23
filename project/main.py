@@ -22,6 +22,8 @@ from .whatsapp_api import (
 from .models import User, MobVer
 from . import db
 
+from . import scheduler
+
 main = Blueprint("main", __name__)
 
 WHATSAPP_BASE_URL = os.environ.get("WHATSAPP_BASE_URL")

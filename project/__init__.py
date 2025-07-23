@@ -88,7 +88,7 @@ def create_app():
     restart_time = os.environ.get("WHATSAPP_SESSION_RESTART")
     restart_time = restart_time.split(":") if restart_time else [0, 0]
 
-    # Add the periodic WhatsApp restart job (every hour at minute 0)
+    # Add the periodic WhatsApp restart job
     scheduler.add_job(
         id="whatsapp_restart",
         func=lambda: whatsapp_restart_session(
