@@ -85,6 +85,8 @@ def create_app():
     base_url = os.environ.get("WHATSAPP_BASE_URL")
     api_key = os.environ.get("WHATSAPP_API_KEY")
     session = os.environ.get("WHATSAPP_SESSION")
+    restart_time = os.environ.get("WHATSAPP_SESSION_RESTART")
+    restart_time = restart_time.split(":") if restart_time else [0, 0]
 
     # Add the periodic WhatsApp restart job (every hour at minute 0)
     scheduler.add_job(
@@ -93,7 +95,8 @@ def create_app():
             base_url=base_url, api_key=api_key, session=session
         ),
         trigger="cron",
-        minute=18,  # runs every hour at minute 0
+        hour=int(restart_time[0]),  
+        minute=int(restart_time[1]),        
         replace_existing=True,
     )
 
