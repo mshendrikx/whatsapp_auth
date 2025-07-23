@@ -3,6 +3,7 @@ flask-login
 flask-sqlalchemy
 flask-wtf
 Flask-Babel
+Flask-APScheduler
 mysql-connector
 pymysql
 python-dotenv

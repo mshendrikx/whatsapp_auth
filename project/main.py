@@ -88,11 +88,11 @@ def profile_post():
         db.session.add(mobver)
         db.session.commit()
 
-        whatsapp_restart_session(
-            base_url=WHATSAPP_BASE_URL,
-            api_key=WHATSAPP_API_KEY,
-            session=WHATSAPP_SESSION,
-        )
+        # whatsapp_restart_session(
+        #    base_url=WHATSAPP_BASE_URL,
+        #    api_key=WHATSAPP_API_KEY,
+        #    session=WHATSAPP_SESSION,
+        # )
 
         contacts = [mobile]
         content = _("Your verification code is: {code}").format(code=mobver.code)
