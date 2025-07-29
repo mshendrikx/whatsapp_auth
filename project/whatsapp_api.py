@@ -25,7 +25,7 @@ def whatsapp_send_message(
 
     contatc_fail = []
     for contact in contacts:
-        chatid = [whatsapp_convert_phone(contact)]
+        chatid = [whatsapp_convert_phone(base_url, api_key, session, contact)]
         if content_type == "string":
             json_data = {
                 "chatId": chatid,
