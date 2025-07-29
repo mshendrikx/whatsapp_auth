@@ -117,6 +117,7 @@ def create_app():
                 language="en",
                 theme="dark",
                 admin=1,
+                whatsapp_id="",
             )
             db.session.add(new_user)
             db.session.commit()

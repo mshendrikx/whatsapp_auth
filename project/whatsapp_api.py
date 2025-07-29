@@ -56,8 +56,8 @@ def whatsapp_convert_phone(base_url, api_key, session, int_phone):
 
     headers = {"x-api-key": api_key}
     url = f"{base_url}/client/getNumberId/{session}"
-    
-    phone = str(int_phone)    
+
+    phone = str(int_phone)
     phone = phone.replace("+", "").replace("-", "").replace(" ", "")
     json_data = {"number": phone}
 
@@ -67,7 +67,7 @@ def whatsapp_convert_phone(base_url, api_key, session, int_phone):
             return None
     except Exception as e:
         return None
-    
+
     return response.json().get("result", None).get("_serialized", None)
 
 

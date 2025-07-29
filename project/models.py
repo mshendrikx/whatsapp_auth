@@ -11,6 +11,7 @@ class User(UserMixin, db.Model):
     language = db.Column(db.String(2))
     theme = db.Column(db.String(5))
     admin = db.Column(db.Integer)
+    whatsapp_id = db.Column(db.String(30))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(
         db.DateTime,
