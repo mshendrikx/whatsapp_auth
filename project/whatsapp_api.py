@@ -52,11 +52,23 @@ def whatsapp_send_message(
     return contatc_fail
 
 
-def whatsapp_convert_phone(int_phone):
+def whatsapp_convert_phone(base_url, api_key, session, int_phone):
 
-    phone = str(int_phone)
+    headers = {"x-api-key": api_key}
+    url = f"{base_url}/client/getNumberId/{session}"
+    
+    phone = str(int_phone)    
+    phone = phone.replace("+", "").replace("-", "").replace(" ", "")
+    json_data = {"number": phone}
 
-    return phone.replace("+", "").replace("-", "").replace(" ", "") + "@c.us"
+    try:
+        response = requests.post(url=url, headers=headers, json=json_data)
+        if response.status_code != 200:
+            return None
+    except Exception as e:
+        return None
+    
+    return response.json().get("result", None).get("_serialized", None)
 
 
 def whatsapp_is_registered_user(base_url, api_key, session, contacts):
@@ -67,7 +79,7 @@ def whatsapp_is_registered_user(base_url, api_key, session, contacts):
 
     contatc_fail = []
     for contact in contacts:
-        chatid = whatsapp_convert_phone(contact)
+        chatid = whatsapp_convert_phone(base_url, api_key, session, contact)
         chatid = chatid.replace("@c.us", "")
         json_data = {"number": chatid}
         try:

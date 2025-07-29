@@ -12,5 +12,5 @@ services:
     ports:
       - 5000:5000
     networks:
-      - karatube
+      - whatsapp_auth
     restart: unless-stopped
