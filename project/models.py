@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
 class MobVer(db.Model):
     userid = db.Column(db.Integer, primary_key=True)
     mobile = db.Column(db.String(30))
+    whatsapp_id = db.Column(db.String(30))
     code = db.Column(db.String(6))
     created_at = db.Column(
         db.DateTime,

@@ -15,7 +15,7 @@ from flask import (
     session,
 )
 from .whatsapp_api import (
-    whatsapp_convert_phone,
+    whatsapp_get_numberid,
     whatsapp_send_message,
     whatsapp_restart_session,
 )
@@ -78,6 +78,21 @@ def profile_post():
     db.session.commit()
 
     if mobile != current_user.mobile:
+        whatsapp_id = whatsapp_get_numberid(
+            base_url=WHATSAPP_BASE_URL,
+            api_key=WHATSAPP_API_KEY,
+            session=WHATSAPP_SESSION,
+            contact=mobile,
+        )
+        if whatsapp_id is None:
+            flash(_("WhatsApp number is not registered"))
+            flash("alert-danger")
+            return redirect(url_for("main.profile"))
+        else:
+            current_user.whatsapp_id = whatsapp_id
+            db.session.add(current_user)
+            db.session.commit()
+
         mobver = MobVer.query.filter_by(userid=current_user.id).first()
         if mobver:
             mobver.code = str(random.randint(100000, 999999))
@@ -85,18 +100,13 @@ def profile_post():
             mobver = MobVer(
                 userid=current_user.id,
                 mobile=mobile,
+                whatsapp_id=whatsapp_id,
                 code=str(random.randint(100000, 999999)),
             )
         db.session.add(mobver)
         db.session.commit()
 
-        # whatsapp_restart_session(
-        #    base_url=WHATSAPP_BASE_URL,
-        #    api_key=WHATSAPP_API_KEY,
-        #    session=WHATSAPP_SESSION,
-        # )
-
-        contacts = [mobile]
+        contacts = [whatsapp_id]
         content = _("Your verification code is: {code}").format(code=mobver.code)
         whatsapp_send_message(
             base_url=WHATSAPP_BASE_URL,
@@ -133,6 +143,7 @@ def mobilechange_post():
 
     if mobver.code == verify:
         current_user.mobile = mobver.mobile
+        current_user.whatsapp_id = mobver.whatsapp_id
         db.session.add(current_user)
         db.session.delete(mobver)
         db.session.commit()
